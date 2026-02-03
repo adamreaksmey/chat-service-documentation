@@ -1,0 +1,2387 @@
+basePath: /api/v1
+definitions:
+  dto.ArchiveChatGroupResponse:
+    properties:
+      groupId:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      isArchived:
+        example: true
+        type: boolean
+      message:
+        example: Chat group archived successfully
+        type: string
+    type: object
+  dto.ChatGroupCreateResponse:
+    properties:
+      avatarUrl:
+        example: https://example.com/avatar.jpg
+        type: string
+      createdAt:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      createdBy:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      description:
+        example: A place for general discussions
+        type: string
+      groupId:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      maxMember:
+        example: 1000
+        type: integer
+      name:
+        example: General Discussion
+        type: string
+      settings:
+        additionalProperties: true
+        type: object
+      type:
+        allOf:
+        - $ref: '#/definitions/enum.ChatTypeEnum'
+        example: group
+    type: object
+  dto.ChatGroupResponse:
+    properties:
+      avatarUrl:
+        example: https://example.com/avatar.jpg
+        type: string
+      conversation:
+        $ref: '#/definitions/dto.ConversationInfo'
+      createdAt:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      createdBy:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      description:
+        example: A place for general discussions
+        type: string
+      groupId:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      isPinned:
+        example: false
+        type: boolean
+      maxMember:
+        example: 1000
+        type: integer
+      members:
+        items:
+          $ref: '#/definitions/dto.ChatMemberInfo'
+        type: array
+      name:
+        example: General Discussion
+        type: string
+      settings:
+        additionalProperties: true
+        type: object
+      type:
+        allOf:
+        - $ref: '#/definitions/enum.ChatTypeEnum'
+        example: group
+      unreadCount:
+        example: 5
+        type: integer
+    type: object
+  dto.ChatMemberInfo:
+    properties:
+      avatarUrl:
+        type: string
+      displayName:
+        type: string
+      role:
+        type: string
+      userId:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.ConversationInfo:
+    properties:
+      conversationId:
+        type: string
+      lastMessageId:
+        type: string
+      lastMessagePreview:
+        type: string
+    type: object
+  dto.CreateChatGroupRequest:
+    properties:
+      avatarUrl:
+        example: https://example.com/avatar.jpg
+        type: string
+      description:
+        example: A place for general discussions
+        maxLength: 5000
+        type: string
+      maxMember:
+        example: 1000
+        maximum: 100000
+        minimum: 1
+        type: integer
+      name:
+        example: General Discussion
+        maxLength: 255
+        minLength: 1
+        type: string
+      receiverIds:
+        example:
+        - 123e4567-e89b-12d3-a456-426614174000
+        items:
+          type: string
+        type: array
+      type:
+        allOf:
+        - $ref: '#/definitions/enum.ChatTypeEnum'
+        enum:
+        - private
+        - group
+        - channel
+        - broadcast
+        example: group
+      userId:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    required:
+    - name
+    - receiverIds
+    - type
+    - userId
+    type: object
+  dto.CreateGroupMessageRequest:
+    properties:
+      content:
+        type: string
+      conversation_id:
+        description: 'Optional: if not provided, group_id will be used to get/create
+          conversation'
+        type: string
+      group_id:
+        description: Required if conversation_id is not provided
+        type: string
+      media_ids:
+        items:
+          type: string
+        type: array
+      mentions:
+        items:
+          type: string
+        type: array
+      message_type:
+        $ref: '#/definitions/models.MessageType'
+      metadata:
+        $ref: '#/definitions/dto.MessageMetadataRequest'
+      reply_to_message_id:
+        description: ObjectID as string
+        type: string
+      sender_id:
+        type: string
+      sequence_number:
+        type: integer
+    required:
+    - group_id
+    - message_type
+    - sender_id
+    type: object
+  dto.CreateMessageReadRequest:
+    properties:
+      conversationId:
+        type: string
+      lastReadMessageId:
+        type: string
+      sequenceNumber:
+        type: integer
+    required:
+    - conversationId
+    - lastReadMessageId
+    - sequenceNumber
+    type: object
+  dto.CreateMessageRequest:
+    properties:
+      content:
+        type: string
+      conversation_id:
+        type: string
+      media_ids:
+        items:
+          type: string
+        type: array
+      mentions:
+        items:
+          type: string
+        type: array
+      message_type:
+        $ref: '#/definitions/models.MessageType'
+      metadata:
+        $ref: '#/definitions/dto.MessageMetadataRequest'
+      receiver_id:
+        type: string
+      reply_to_message_id:
+        description: ObjectID as string
+        type: string
+      sender_id:
+        type: string
+      sequence_number:
+        type: integer
+    required:
+    - message_type
+    - receiver_id
+    - sender_id
+    type: object
+  dto.CursorInfo:
+    properties:
+      last_message_id:
+        type: string
+      last_timestamp:
+        type: string
+    type: object
+  dto.EditHistoryEntryResponse:
+    properties:
+      content:
+        type: string
+      edited_at:
+        type: string
+    type: object
+  dto.FavoriteChatGroupResponse:
+    properties:
+      groupId:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      isFavorited:
+        example: true
+        type: boolean
+      message:
+        example: Chat group favorited successfully
+        type: string
+    type: object
+  dto.InviteLinkResponse:
+    properties:
+      expiresAt:
+        type: string
+      inviteCode:
+        type: string
+      inviteLink:
+        type: string
+    type: object
+  dto.InviteMemberRequest:
+    properties:
+      memberIds:
+        example:
+        - 123e4567-e89b-12d3-a456-426614174000
+        items:
+          type: string
+        type: array
+      permissions:
+        allOf:
+        - $ref: '#/definitions/enum.PermissionEnum'
+        enum:
+        - can_post
+        - can_invite
+        example: can_post
+      role:
+        allOf:
+        - $ref: '#/definitions/enum.RoleEnum'
+        enum:
+        - member
+        - admin
+        example: member
+    required:
+    - memberIds
+    - permissions
+    - role
+    type: object
+  dto.LinkPreviewRequest:
+    properties:
+      description:
+        type: string
+      image_url:
+        type: string
+      title:
+        type: string
+      url:
+        type: string
+    type: object
+  dto.LinkPreviewResponse:
+    properties:
+      description:
+        type: string
+      image_url:
+        type: string
+      title:
+        type: string
+      url:
+        type: string
+    type: object
+  dto.MediaResponse:
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      url:
+        type: string
+    type: object
+  dto.MessageListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.MessageResponse'
+        type: array
+      has_more:
+        type: boolean
+      limit:
+        type: integer
+      next_cursor:
+        allOf:
+        - $ref: '#/definitions/dto.CursorInfo'
+        description: For cursor-based pagination
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.MessageMetadataRequest:
+    properties:
+      extra:
+        additionalProperties: {}
+        type: object
+      forwarded_from:
+        type: string
+      link_preview:
+        $ref: '#/definitions/dto.LinkPreviewRequest'
+    type: object
+  dto.MessageMetadataResponse:
+    properties:
+      edit_history:
+        items:
+          $ref: '#/definitions/dto.EditHistoryEntryResponse'
+        type: array
+      extra:
+        additionalProperties: {}
+        type: object
+      forwarded_from:
+        type: string
+      link_preview:
+        $ref: '#/definitions/dto.LinkPreviewResponse'
+    type: object
+  dto.MessageReadResponse:
+    properties:
+      conversationId:
+        type: string
+      id:
+        type: string
+      lastReadMessageId:
+        type: string
+      lastReadSequenceNumber:
+        type: integer
+      readAt:
+        type: string
+      userId:
+        type: string
+    type: object
+  dto.MessageResponse:
+    properties:
+      content:
+        type: string
+      conversation_id:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      edited_at:
+        type: string
+      id:
+        type: string
+      is_deleted:
+        type: boolean
+      media:
+        items:
+          $ref: '#/definitions/dto.MediaResponse'
+        type: array
+      media_ids:
+        items:
+          type: string
+        type: array
+      mentions:
+        items:
+          type: string
+        type: array
+      message_type:
+        type: string
+      metadata:
+        $ref: '#/definitions/dto.MessageMetadataResponse'
+      reply_to_message_id:
+        type: string
+      sender_id:
+        type: string
+      sequence_number:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  dto.MuteChatGroupResponse:
+    properties:
+      groupId:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      isMuted:
+        example: true
+        type: boolean
+      message:
+        example: Chat group muted successfully
+        type: string
+    type: object
+  dto.PinChatGroupResponse:
+    properties:
+      groupId:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      isPinned:
+        example: true
+        type: boolean
+      message:
+        example: Chat group pinned successfully
+        type: string
+    type: object
+  dto.PromoteMemberRequest:
+    properties:
+      role:
+        allOf:
+        - $ref: '#/definitions/enum.RoleEnum'
+        enum:
+        - admin
+        - owner
+        - member
+    required:
+    - role
+    type: object
+  dto.PromoteMemberResponse:
+    properties:
+      memberId:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      message:
+        example: Member promoted successfully
+        type: string
+      newRole:
+        example: admin
+        type: string
+      oldRole:
+        example: member
+        type: string
+    type: object
+  dto.UpdateChatGroupRequest:
+    properties:
+      avatarUrl:
+        example: https://example.com/new-avatar.jpg
+        type: string
+      description:
+        example: Updated description
+        maxLength: 5000
+        type: string
+      maxMember:
+        example: 2000
+        maximum: 100000
+        minimum: 1
+        type: integer
+      name:
+        example: Updated Group Name
+        maxLength: 255
+        minLength: 1
+        type: string
+      settings:
+        additionalProperties: true
+        type: object
+    type: object
+  dto.UpdateChatGroupSettingsRequest:
+    properties:
+      settings:
+        additionalProperties: true
+        description: Full settings object to replace existing settings
+        type: object
+    required:
+    - settings
+    type: object
+  dto.UpdateChatGroupSettingsResponse:
+    properties:
+      groupId:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      message:
+        example: Chat group settings updated successfully
+        type: string
+      settings:
+        additionalProperties: true
+        type: object
+      updatedAt:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+    type: object
+  dto.UpdateMessageRequest:
+    properties:
+      content:
+        type: string
+      mentions:
+        items:
+          type: string
+        type: array
+      metadata:
+        $ref: '#/definitions/dto.MessageMetadataRequest'
+    type: object
+  dto.UpdateMuteStatusRequest:
+    properties:
+      isMuted:
+        description: true to mute, false to unmute
+        example: true
+        type: boolean
+      mutedUntil:
+        description: 'Optional: when to auto-unmute'
+        example: "2024-01-01T00:00:00Z"
+        type: string
+    required:
+    - isMuted
+    type: object
+  enum.ChatTypeEnum:
+    enum:
+    - private
+    - group
+    - channel
+    - broadcast
+    - direct
+    type: string
+    x-enum-varnames:
+    - PRIVATE
+    - GROUP
+    - CHANNEL
+    - BROADCAST
+    - DIRECT
+  enum.PermissionEnum:
+    enum:
+    - can_post
+    - can_invite
+    type: string
+    x-enum-varnames:
+    - CAN_POST
+    - CAN_INVITE
+  enum.RoleEnum:
+    enum:
+    - owner
+    - admin
+    - member
+    type: string
+    x-enum-varnames:
+    - OWNER
+    - ADMIN
+    - MEMBER
+  error.HttpError:
+    properties:
+      code:
+        type: integer
+      data: {}
+      errorDetail:
+        type: string
+      errorMessage:
+        type: string
+      message:
+        type: string
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  models.Conversation:
+    properties:
+      conversationId:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      groupId:
+        description: only for group
+        type: string
+      isArchivedUser1:
+        type: boolean
+      isArchivedUser2:
+        type: boolean
+      isPinnedUser1:
+        type: boolean
+      isPinnedUser2:
+        type: boolean
+      lastMessageAt:
+        type: string
+      lastMessageId:
+        type: string
+      lastMessagePreview:
+        type: string
+      message_read:
+        items:
+          $ref: '#/definitions/models.MessageRead'
+        type: array
+      type:
+        type: string
+      unreadCountUser1:
+        type: integer
+      unreadCountUser2:
+        type: integer
+      updated_at:
+        type: string
+      user1Id:
+        description: only for direct
+        type: string
+      user2Id:
+        description: only for direct
+        type: string
+    type: object
+  models.GroupMember:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      groupId:
+        type: string
+      id:
+        type: string
+      isArchived:
+        type: boolean
+      isFavorited:
+        type: boolean
+      isMuted:
+        type: boolean
+      isPinned:
+        type: boolean
+      joinedAt:
+        type: string
+      leftAt:
+        type: string
+      permissions:
+        $ref: '#/definitions/enum.PermissionEnum'
+      role:
+        $ref: '#/definitions/enum.RoleEnum'
+      updated_at:
+        type: string
+      userId:
+        type: string
+    type: object
+  models.MessageRead:
+    properties:
+      conversationId:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      lastReadMessageId:
+        type: string
+      lastReadSequenceNumber:
+        type: integer
+      readAt:
+        type: string
+      updated_at:
+        type: string
+      userId:
+        type: string
+    type: object
+  models.MessageType:
+    enum:
+    - text
+    - image
+    - video
+    - audio
+    - file
+    - location
+    - contact
+    - sticker
+    - call_log
+    - system
+    type: string
+    x-enum-varnames:
+    - MessageTypeText
+    - MessageTypeImage
+    - MessageTypeVideo
+    - MessageTypeAudio
+    - MessageTypeFile
+    - MessageTypeLocation
+    - MessageTypeContact
+    - MessageTypeSticker
+    - MessageTypeCallLog
+    - MessageTypeSystem
+  models.User:
+    properties:
+      avatar_url:
+        type: string
+      bio:
+        type: string
+      conversationsUser1:
+        items:
+          $ref: '#/definitions/models.Conversation'
+        type: array
+      conversationsUser2:
+        items:
+          $ref: '#/definitions/models.Conversation'
+        type: array
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      display_name:
+        type: string
+      email:
+        type: string
+      groups:
+        description: 'Relationship: all groups this user is in (via GroupMember)'
+        items:
+          $ref: '#/definitions/models.GroupMember'
+        type: array
+      is_deleted:
+        description: Soft delete
+        type: boolean
+      last_seen:
+        type: string
+      phone_number:
+        type: string
+      settings:
+        description: notifications, privacy
+        type: string
+      status:
+        description: online, offline, away
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      userId:
+        items:
+          $ref: '#/definitions/models.MessageRead'
+        type: array
+      username:
+        type: string
+    type: object
+  pkg_dto.MetadataDTO:
+    properties:
+      currentPage:
+        type: integer
+      hasNext:
+        type: boolean
+      hasPrev:
+        type: boolean
+      limit:
+        type: integer
+      totalCount:
+        type: integer
+      totalPage:
+        type: integer
+    type: object
+  pkg_dto.ResponseDTO:
+    properties:
+      data: {}
+      message:
+        type: string
+      metadata:
+        $ref: '#/definitions/pkg_dto.MetadataDTO'
+      statusCode:
+        type: integer
+    type: object
+  pkg_dto.SingleResponseDTO:
+    properties:
+      data: {}
+      message:
+        type: string
+      statusCode:
+        type: integer
+    type: object
+  user.CreateUserRequest:
+    properties:
+      avatar_url:
+        type: string
+      bio:
+        maxLength: 2000
+        type: string
+      display_name:
+        maxLength: 100
+        minLength: 1
+        type: string
+      email:
+        maxLength: 100
+        type: string
+      password:
+        maxLength: 255
+        minLength: 8
+        type: string
+      phone_number:
+        maxLength: 20
+        minLength: 1
+        type: string
+      settings:
+        type: string
+      status:
+        enum:
+        - online
+        - offline
+        - away
+        type: string
+      username:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - display_name
+    - email
+    - password
+    - phone_number
+    - username
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: Swagger documentation for messenger chat service.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Messenger Chat Service API
+  version: "1.0"
+paths:
+  /chat-groups:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all chats for the authenticated user
+      parameters:
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      - description: Search by chat group name
+        in: query
+        name: search
+        type: string
+      - description: Filter by chat type (private, group, channel, broadcast)
+        in: query
+        name: type
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved list with pagination metadata
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.ResponseDTO'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ChatGroupResponse'
+                  type: array
+                metadata:
+                  $ref: '#/definitions/pkg_dto.MetadataDTO'
+              type: object
+        "400":
+          description: Bad request - invalid pagination parameters
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized - invalid or missing auth token
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      summary: Get user's chat list
+      tags:
+      - Chat group
+    post:
+      consumes:
+      - application/json
+      description: Create a new chat group with the provided details
+      parameters:
+      - description: Chat Group Details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateChatGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully created chat group
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ChatGroupCreateResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Create a new chat group
+      tags:
+      - Chat group
+  /chat-groups/{uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a chat group. For groups and channels, only the owner can
+        delete. For private chats, any participant can delete.
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted chat group
+          schema:
+            properties:
+              message:
+                type: string
+              success:
+                type: boolean
+            type: object
+        "400":
+          description: Bad request - invalid parameters
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized - invalid or missing auth token
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "403":
+          description: Forbidden - user does not have permission to delete
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Delete a chat group
+      tags:
+      - Chat group
+    get:
+      consumes:
+      - application/json
+      description: Get a specific chat group by its UUID. Returns full chat group
+        details.
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully retrieved chat group
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ChatGroupCreateResponse'
+              type: object
+        "400":
+          description: Bad request - invalid UUID format
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized - invalid or missing auth token
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Get chat group by UUID
+      tags:
+      - Chat group
+    patch:
+      consumes:
+      - application/json
+      description: Update a chat group by its UUID. Only the group owner can update
+        the group.
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      - description: Update Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateChatGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully update chat group
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ChatGroupCreateResponse'
+              type: object
+        "400":
+          description: Bad request - invalid parameters
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized - invalid or missing auth token
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "403":
+          description: Forbidden - user is not the owner
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Update chat group
+      tags:
+      - Chat group
+  /chat-groups/{uuid}/archive:
+    patch:
+      consumes:
+      - application/json
+      description: Archive or unarchive a chat group for the authenticated user. Accepts
+        isArchived as boolean, string ("true"/"false"), or number (0/1).
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      - description: 'Archive Status Request (isArchived: true/false, '
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            isArchived:
+              type: boolean
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated archive status
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ArchiveChatGroupResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "403":
+          description: Forbidden - user is not a member
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Update chat group archive status
+      tags:
+      - Chat group
+  /chat-groups/{uuid}/favorite:
+    patch:
+      consumes:
+      - application/json
+      description: Favorite or unfavorite a chat group for the authenticated user.
+        Accepts isFavorited as boolean, string ("true"/"false"), or number (0/1).
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      - description: 'Favorite Status Request (isFavorited: true/false, '
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            isFavorited:
+              type: boolean
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated favorite status
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.FavoriteChatGroupResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "403":
+          description: Forbidden - user is not a member
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Update chat group favorite status
+      tags:
+      - Chat group
+  /chat-groups/{uuid}/invite:
+    post:
+      consumes:
+      - application/json
+      description: Invite members to a chat group. Only the group owner can invite
+        members.
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      - description: Invite Members Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.InviteMemberRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully invited member to chat group
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ChatGroupCreateResponse'
+              type: object
+        "401":
+          description: Unauthorized - invalid or missing auth token
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "403":
+          description: Forbidden - user is not the owner
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Invite members to chat group
+      tags:
+      - Chat group
+  /chat-groups/{uuid}/invite-link:
+    post:
+      consumes:
+      - application/json
+      description: Generate a new invite link or retrieve the existing valid one.
+        Only the owner can do this.
+      parameters:
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully generated/retrieved invite link
+          schema:
+            $ref: '#/definitions/dto.InviteLinkResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Generate or retrieve an invite link for a chat group
+      tags:
+      - Chat group
+  /chat-groups/{uuid}/leave:
+    post:
+      consumes:
+      - application/json
+      description: Leave a chat group. The user will be removed from the group. Owners
+        cannot leave their own groups.
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully left the group
+          schema:
+            properties:
+              message:
+                type: string
+              success:
+                type: boolean
+            type: object
+        "400":
+          description: Bad request - owner cannot leave or invalid parameters
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized - invalid or missing auth token
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group not found or user is not a member
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Leave a chat group
+      tags:
+      - Chat group
+  /chat-groups/{uuid}/members/{memberId}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a member from a chat group. Only the group owner can remove
+        members.
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Member UUID to remove
+        in: path
+        name: memberId
+        required: true
+        type: string
+      - description: User ID (Requester)
+        in: query
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully removed member
+          schema:
+            properties:
+              message:
+                type: string
+              success:
+                type: boolean
+            type: object
+        "400":
+          description: Bad request - invalid parameters
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized - invalid or missing auth token
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "403":
+          description: Forbidden - user is not the owner
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group or member not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Remove member from chat group
+      tags:
+      - Chat group
+  /chat-groups/{uuid}/members/{memberId}/promote:
+    patch:
+      consumes:
+      - application/json
+      description: Promote a member to admin, transfer ownership to owner, or demote
+        admin to member. Owner and admin can promote members to admin. Only owner
+        can promote to owner (transfer ownership) or demote admin to member.
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Member UUID to promote/demote
+        in: path
+        name: memberId
+        required: true
+        type: string
+      - description: User ID (Requester)
+        in: query
+        name: userId
+        required: true
+        type: string
+      - description: 'Promote/Demote Request (role: ''admin'', ''owner'', or ''member'')'
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PromoteMemberRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully changed member role
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PromoteMemberResponse'
+              type: object
+        "400":
+          description: Bad request - invalid parameters
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized - invalid or missing auth token
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "403":
+          description: Forbidden - user does not have permission to change role
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group or member not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Promote or demote a member in chat group
+      tags:
+      - Chat group
+  /chat-groups/{uuid}/mute:
+    patch:
+      consumes:
+      - application/json
+      description: Mute or unmute a chat group for the authenticated user
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      - description: Mute Status Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateMuteStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated mute status
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MuteChatGroupResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "403":
+          description: Forbidden - user is not a member
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Update chat group mute status
+      tags:
+      - Chat group
+  /chat-groups/{uuid}/pin:
+    patch:
+      consumes:
+      - application/json
+      description: Pin or unpin a chat group for the authenticated user. Accepts isPinned
+        as boolean, string ("true"/"false"), or number (0/1).
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      - description: 'Pin Status Request (isPinned: true/false, '
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            isPinned:
+              type: boolean
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated pin status
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PinChatGroupResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "403":
+          description: Forbidden - user is not a member
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Update chat group pin status
+      tags:
+      - Chat group
+  /chat-groups/{uuid}/settings:
+    patch:
+      consumes:
+      - application/json
+      description: Update settings for a chat group. Only the group owner can update
+        settings. Private chats cannot update settings.
+      parameters:
+      - description: Chat group UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      - description: Settings Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateChatGroupSettingsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated chat group settings
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UpdateChatGroupSettingsResponse'
+              type: object
+        "400":
+          description: Bad request - invalid parameters
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized - invalid or missing auth token
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "403":
+          description: Forbidden - user is not the owner
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Chat group not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Update chat group settings
+      tags:
+      - Chat group
+  /chat-groups/join/{code}:
+    post:
+      consumes:
+      - application/json
+      description: Join a chat group using a valid invite code/link.
+      parameters:
+      - description: Invite Code
+        in: path
+        name: code
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully joinned chat group
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ChatGroupCreateResponse'
+              type: object
+        "400":
+          description: Bad request or expired code
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Invite code not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Join a chat group via invite code
+      tags:
+      - Chat group
+  /conversations/{conversation_id}/messages:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of messages for a conversation. Supports both
+        offset-based and cursor-based pagination. If last_time_stamp is provided,
+        uses cursor-based pagination for efficient incremental sync.
+      parameters:
+      - description: Conversation ID
+        in: path
+        name: conversation_id
+        required: true
+        type: string
+      - default: 50
+        description: 'Limit (default: 50, max: 100 for offset, 500 for cursor)'
+        in: query
+        name: limit
+        type: integer
+      - description: 'Offset for offset-based pagination (default: 0). Ignored if
+          last_time_stamp is provided.'
+        in: query
+        name: offset
+        type: integer
+      - description: ISO 8601 timestamp for cursor-based pagination. Fetches messages
+          newer than this timestamp.
+        in: query
+        name: last_time_stamp
+        type: string
+      - description: Message ID for precise cursor positioning. Used with last_time_stamp
+          to handle timestamp collisions.
+        in: query
+        name: last_message_id
+        type: string
+      - description: 'Direction for cursor-based pagination: ''newer'' (default) or
+          ''older''. Only used with last_time_stamp.'
+        in: query
+        name: direction
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MessageListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Get messages by conversation ID
+      tags:
+      - messages
+  /conversations/{conversation_id}/messages/count:
+    get:
+      consumes:
+      - application/json
+      description: Get the total count of messages in a conversation
+      parameters:
+      - description: Conversation ID
+        in: path
+        name: conversation_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              conversation_id:
+                type: string
+              count:
+                format: int64
+                type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Count messages by conversation ID
+      tags:
+      - messages
+  /conversations/{conversation_id}/messages/latest:
+    get:
+      consumes:
+      - application/json
+      description: Get the most recent message in a conversation
+      parameters:
+      - description: Conversation ID
+        in: path
+        name: conversation_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/dto.MessageResponse'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Get latest message by conversation ID
+      tags:
+      - messages
+  /health:
+    get:
+      description: Check if the server is running
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              message:
+                type: string
+              status:
+                type: string
+            type: object
+  /messages/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a message (marks as deleted but keeps in database)
+      parameters:
+      - description: Message ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Soft delete a message
+      tags:
+      - messages
+    get:
+      consumes:
+      - application/json
+      description: Get a specific message by its ID
+      parameters:
+      - description: Message ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/dto.MessageResponse'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Get message by ID
+      tags:
+      - messages
+    put:
+      consumes:
+      - application/json
+      description: Update message fields (content, metadata, mentions)
+      parameters:
+      - description: Message ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/dto.MessageResponse'
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Update a message
+      tags:
+      - messages
+  /messages/{id}/content:
+    patch:
+      consumes:
+      - application/json
+      description: Update the content of a message and add to edit history
+      parameters:
+      - description: Message ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New content
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/dto.MessageResponse'
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Update message content
+      tags:
+      - messages
+  /messages/{id}/hard:
+    delete:
+      consumes:
+      - application/json
+      description: Permanently delete a message from the database
+      parameters:
+      - description: Message ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Hard delete a message
+      tags:
+      - messages
+  /messages/direct:
+    post:
+      consumes:
+      - application/json
+      description: Create a new message in a conversation
+      parameters:
+      - description: Message data
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/dto.MessageResponse'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Create a new message
+      tags:
+      - messages
+  /messages/group:
+    post:
+      consumes:
+      - application/json
+      description: Create a new message in a group conversation. If the conversation
+        doesn't exist, it will be created automatically.
+      parameters:
+      - description: Group message data
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateGroupMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/dto.MessageResponse'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Create a new group message
+      tags:
+      - messages
+  /messages/read:
+    post:
+      consumes:
+      - application/json
+      description: Mark a message as read for a user in a conversation
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Message read data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMessageReadRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully read message
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageReadResponse'
+              type: object
+        "400":
+          description: Bad request or expired code
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "404":
+          description: Invite code not found
+          schema:
+            $ref: '#/definitions/error.HttpError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.HttpError'
+      summary: Mark message as read
+      tags:
+      - messages
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all users
+      produces:
+      - application/json
+      responses:
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Get all users
+      tags:
+      - users
+  /users/{sender_id}/messages:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of messages sent by a user
+      parameters:
+      - description: Sender ID
+        in: path
+        name: sender_id
+        required: true
+        type: string
+      - default: 50
+        description: 'Limit (default: 50, max: 100)'
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: 'Offset (default: 0)'
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MessageListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Get messages by sender ID
+      tags:
+      - messages
+  /users/manual:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user from the API
+      parameters:
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/models.User'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Create a new user from the API
+      tags:
+      - users
+schemes:
+- http
+- https
+swagger: "2.0"

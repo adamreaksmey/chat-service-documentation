@@ -1,0 +1,9 @@
+{
+  "name": "chat-documentation",
+  "version": "1.0.0",
+  "description": "API documentation for Chat Service",
+  "scripts": {
+    "serve": "npx serve . -p 3001",
+    "start": "npx serve . -p 3001"
+  }
+}

@@ -845,10 +845,12 @@ definitions:
 host: localhost:3000
 info:
   contact:
-    email: support@swagger.io
     name: API Support
-    url: http://www.swagger.io/support
-  description: Swagger documentation for messenger chat service.
+  description: Messenger Chat Service provides real-time messaging capabilities for
+    direct and group conversations. It supports message CRUD, read receipts, chat
+    group management, invite links, and integrates with MongoDB (messages), PostgreSQL
+    (conversations, chat groups, users), Redis (presence, notifications), and RabbitMQ
+    (async notification fan-out). All endpoints are prefixed with /api/v1.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -860,7 +862,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: Retrieve all chats for the authenticated user
+      description: Retrieve paginated chat list for a user. Returns chat groups with
+        conversation preview, unread count, and member info. Supports search, type
+        filter (private|group|channel|broadcast), and pagination.
       parameters:
       - description: User ID
         in: query
@@ -919,7 +923,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new chat group with the provided details
+      description: Create a chat group with name, description, type (private|group|channel|broadcast),
+        receiverIds (for private), and maxMember. For private chats, creates a 1:1
+        group between userId and receiverIds.
       parameters:
       - description: Chat Group Details
         in: body
@@ -1013,15 +1019,15 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get a specific chat group by its UUID. Returns full chat group
-        details.
+      description: Get a specific chat group by its UUID. Returns full details including
+        members, conversation info, and settings. User must be a member.
       parameters:
       - description: Chat group UUID
         in: path
         name: uuid
         required: true
         type: string
-      - description: User ID
+      - description: User ID (UUID) - must be a member
         in: query
         name: userId
         required: true
@@ -1029,14 +1035,14 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Successfully retrieved chat group
+        "200":
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.ChatGroupCreateResponse'
+                  $ref: '#/definitions/dto.ChatGroupResponse'
               type: object
         "400":
           description: Bad request - invalid UUID format
@@ -2156,14 +2162,22 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new message in a conversation
+      description: Send a direct (1:1) message to another user. Requires friendship
+        (validated via User Service unless X-K6-Test-Mode header is set). Creates
+        conversation and private chat group if first message. Returns the created
+        message with ID and sequence number.
       parameters:
-      - description: Message data
+      - description: 'Message payload: sender_id, receiver_id, message_type (text|image|video|audio|file|location|contact),
+          content, optional reply_to_message_id, media_ids, mentions'
         in: body
         name: message
         required: true
         schema:
           $ref: '#/definitions/dto.CreateMessageRequest'
+      - description: Set to 'true' to bypass friendship check (for load testing)
+        in: header
+        name: X-K6-Test-Mode
+        type: string
       produces:
       - application/json
       responses:
@@ -2181,6 +2195,13 @@ paths:
               error:
                 type: string
             type: object
+        "403":
+          description: Not friends - only friends can chat
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
         "500":
           description: Internal Server Error
           schema:
@@ -2188,17 +2209,26 @@ paths:
               error:
                 type: string
             type: object
-      summary: Create a new message
+        "503":
+          description: User Service unavailable for friendship check
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Send a direct message
       tags:
       - messages
   /messages/group:
     post:
       consumes:
       - application/json
-      description: Create a new message in a group conversation. If the conversation
-        doesn't exist, it will be created automatically.
+      description: Send a message to a group chat. Provide either conversation_id
+        or group_id. If conversation does not exist, it is created automatically.
+        Returns the created message with ID and sequence number.
       parameters:
-      - description: Group message data
+      - description: 'Group message payload: group_id (or conversation_id), sender_id,
+          message_type, content, optional reply_to_message_id, media_ids, mentions'
         in: body
         name: message
         required: true
@@ -2221,6 +2251,13 @@ paths:
               error:
                 type: string
             type: object
+        "404":
+          description: Conversation not found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
         "500":
           description: Internal Server Error
           schema:
@@ -2228,21 +2265,25 @@ paths:
               error:
                 type: string
             type: object
-      summary: Create a new group message
+      summary: Send a group message
       tags:
       - messages
   /messages/read:
     post:
       consumes:
       - application/json
-      description: Mark a message as read for a user in a conversation
+      description: Record the last read message for a user in a conversation. Used
+        for read receipts and unread counts. Pass conversationId, lastReadMessageId
+        (MongoDB ObjectID string), and sequenceNumber in the body. userId is passed
+        as query parameter.
       parameters:
-      - description: User ID
-        in: path
+      - description: User ID (UUID) - the user marking as read
+        in: query
         name: userId
         required: true
         type: string
-      - description: Message read data
+      - description: conversationId (UUID), lastReadMessageId (Mongo ObjectID string),
+          sequenceNumber (int)
         in: body
         name: request
         required: true
@@ -2251,8 +2292,8 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Successfully read message
+        "200":
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/pkg_dto.SingleResponseDTO'
@@ -2261,32 +2302,38 @@ paths:
                   $ref: '#/definitions/dto.MessageReadResponse'
               type: object
         "400":
-          description: Bad request or expired code
+          description: Bad Request
           schema:
-            $ref: '#/definitions/error.HttpError'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/error.HttpError'
-        "404":
-          description: Invite code not found
-          schema:
-            $ref: '#/definitions/error.HttpError'
+            properties:
+              error:
+                type: string
+            type: object
         "500":
-          description: Internal server error
+          description: Internal Server Error
           schema:
-            $ref: '#/definitions/error.HttpError'
-      summary: Mark message as read
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Mark messages as read
       tags:
       - messages
   /users:
     get:
       consumes:
       - application/json
-      description: Get a list of all users
+      description: Get a list of all registered users. Returns user_id, username,
+        display_name, avatar_url, and related fields.
       produces:
       - application/json
       responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              data:
+                type: array
+            type: object
         "500":
           description: Internal Server Error
           schema:
@@ -2346,9 +2393,11 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new user from the API
+      description: Create a new user via API. Used for seeding or manual registration.
+        Requires username, and optionally display_name, avatar_url, etc.
       parameters:
-      - description: User data
+      - description: 'User payload: username (required), display_name, avatar_url,
+          etc.'
         in: body
         name: request
         required: true
@@ -2363,6 +2412,8 @@ paths:
             properties:
               data:
                 $ref: '#/definitions/models.User'
+              message:
+                type: string
             type: object
         "400":
           description: Bad Request
@@ -2378,7 +2429,7 @@ paths:
               error:
                 type: string
             type: object
-      summary: Create a new user from the API
+      summary: Create a user (manual/seed)
       tags:
       - users
 schemes:
